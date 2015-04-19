@@ -1,0 +1,56 @@
+CROSS_HOST="x86_64-w64-mingw32"
+inherit cross qt4-qmake
+
+NAME="mingw64-x86_64-qt4-webkit"
+VERSION=4.10.4
+RELEASE=1
+CATEGORY="Devel"
+SUMMARY="Qt4 WebKit library for Win64 toolchain"
+DESCRIPTION=
+HOMEPAGE="https://trac.webkit.org/wiki/QtWebKit"
+tarball_v=2.3.${VERSION##*\.}
+SRC_URI="mirror://kde/stable/qtwebkit-2.3/${tarball_v}/src/qtwebkit-${tarball_v}.tar.gz"
+SRC_DIR="."
+PATCH_URI="
+	http://pkgs.fedoraproject.org/cgit/qtwebkit.git/plain/webkit-qtwebkit-23-private_browsing.patch
+	http://pkgs.fedoraproject.org/cgit/mingw-qt5-qtwebkit.git/plain/qt5-qtwebkit-enable-pkgconfig-support-for-win32-target.patch
+"
+
+DISTCLEANFILES=".qmake.cache.in"
+
+src_compile() {
+	cd ${B}
+	QTDIR=${QT4_QTDIR} \
+	PATH=$(dirname $(readlink -f ${QT4_QMAKE})):${PATH} \
+	QMAKEPATH=${S}/Tools/qmake \
+	WEBKITOUTPUTDIR=${B} \
+	${S}/Tools/Scripts/build-webkit \
+		--qt --no-webkit2 --release --system-malloc \
+		--qmakearg="CONFIG+=production_build" \
+		--qmakearg="DEFINES+=HAVE_LIBWEBP=1" \
+		$(for flag in ${CXXFLAGS} -g0; do echo --qmakearg="QMAKE_CXXFLAGS_RELEASE+=$flag"; done) \
+		--qmakearg="QMAKE_STRIP=:" \
+		--makeargs=${MAKEOPTS}
+}
+
+src_install() {
+	cd ${B}/Release
+	qt4_qmake_install
+
+	dodir ${CROSS_LIBDIR}/pkgconfig
+	cat > ${D}${CROSS_LIBDIR}/pkgconfig/QtWebKit.pc <<_EOF
+prefix=${CROSS_PREFIX}
+exec_prefix=\${prefix}
+libdir=\${prefix}/lib
+includedir=\${prefix}/include/qt4/QtWebKit
+
+Name: Qtwebkit
+Description: Qtwebkit Library
+Version: 4.10.4
+Libs: -L\${libdir} -lQtWebKit
+Cflags: -I\${includedir}
+Requires: QtCore QtGui QtNetwork
+_EOF
+}
+
+DOCS="Source/WebCore/LICENSE-*"
