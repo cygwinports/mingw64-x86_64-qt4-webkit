@@ -3,7 +3,7 @@ inherit cross qt4-qmake
 
 NAME="mingw64-x86_64-qt4-webkit"
 VERSION=4.10.4
-RELEASE=1
+RELEASE=2
 CATEGORY="Devel"
 SUMMARY="Qt4 WebKit library for Win64 toolchain"
 DESCRIPTION=
