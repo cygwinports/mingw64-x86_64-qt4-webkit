@@ -3,7 +3,7 @@ inherit cross qt4-qmake
 
 NAME="mingw64-x86_64-qt4-webkit"
 VERSION=4.10.4
-RELEASE=2
+RELEASE=3
 CATEGORY="Devel"
 SUMMARY="Qt4 WebKit library for Win64 toolchain"
 DESCRIPTION=
@@ -12,6 +12,7 @@ tarball_v=2.3.${VERSION##*\.}
 SRC_URI="mirror://kde/stable/qtwebkit-2.3/${tarball_v}/src/qtwebkit-${tarball_v}.tar.gz"
 SRC_DIR="."
 PATCH_URI="
+	http://pkgs.fedoraproject.org/cgit/qtwebkit.git/plain/webkit-qtwebkit-23-gcc5.patch
 	http://pkgs.fedoraproject.org/cgit/qtwebkit.git/plain/webkit-qtwebkit-23-private_browsing.patch
 	http://pkgs.fedoraproject.org/cgit/mingw-qt5-qtwebkit.git/plain/qt5-qtwebkit-enable-pkgconfig-support-for-win32-target.patch
 "
